@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPhone 15 Pro Max - TechZone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="/css/product/product_detail.css" rel="stylesheet">
+    <link href="/css/home/styles.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                TechZone
+                <span class="text-primary">.vn</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Trang chủ</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Danh mục
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Điện thoại</a></li>
+                            <li><a class="dropdown-item" href="#">Laptop</a></li>
+                            <li><a class="dropdown-item" href="#">Tablet</a></li>
+                            <li><a class="dropdown-item" href="#">Phụ kiện</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Khuyến mãi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Tin tức</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <form class="search-form">
+                        <input type="search" placeholder="Tìm kiếm sản phẩm...">
+                        <button type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                    <div class="nav-buttons">
+                        <button class="btn-icon">
+                            <i class="bi bi-cart3"></i>
+                            <span class="badge">2</span>
+                        </button>
+                        <button class="btn-icon" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end user-menu">
+                            <li class="dropdown-header">
+                                <div class="user-info">
+                                    <div class="user-avatar">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div class="user-details">
+                                        <h6 class="mb-0">Chưa đăng nhập</h6>
+                                        <small>Đăng nhập để mua sắm</small>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="/login">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                    Đăng nhập
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/register">
+                                    <i class="bi bi-person-plus"></i>
+                                    Đăng ký
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="/orders">
+                                    <i class="bi bi-bag"></i>
+                                    Đơn hàng của tôi
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/wishlist">
+                                    <i class="bi bi-heart"></i>
+                                    Sản phẩm yêu thích
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/profile">
+                                    <i class="bi bi-person-gear"></i>
+                                    Cài đặt tài khoản
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="/logout">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    Đăng xuất
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Product Detail Section -->
+    <section class="product-detail">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="/products">Điện thoại</a></li>
+                    <li class="breadcrumb-item active" th:text="${sanPham.tensanpham}"></li>
+                </ol>
+            </nav>
+
+            <div class="row g-4">
+                <!-- Product Images -->
+                <div class="col-lg-6">
+                    <div class="product-gallery">
+                        <div class="main-image">
+                            <img th:src="@{${sanPham.anh}}" alt="iPhone 15 Pro Max" id="mainImage">
+                            <span class="discount-badge" th:text="${sanPham.giamGia} + '%'"></span>
+                        </div>
+                        <div class="thumbnail-list">
+                            <button class="thumb-item active">
+                                <img th:src="@{${sanPham.anh}}" alt="Thumbnail 1">
+                            </button>
+                            <!-- More thumbnails as needed -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="col-lg-6">
+                    <div class="product-info">
+                        <h1 class="product-title" th:text="${sanPham.tensanpham}"></h1>
+                        <div class="product-meta">
+                            <div class="rating">
+                                <div class="stars">
+                                    <i class="bi bi-star-fill" th:each="i : ${#numbers.sequence(1,5)}"></i>
+                                </div>
+                                <span class="rating-count">(120 đánh giá)</span>
+                            </div>
+                            <div class="brand">
+                                Thương hiệu: <a href="#">Apple</a>
+                            </div>
+                            <div class="sku">
+                                Mã sản phẩm: <span th:text="${sanPham.id}"></span>
+                            </div>
+                        </div>
+
+                        <div class="product-price">
+                            <div class="current-price" th:text="${sanPham.gia} + '₫'"></div>
+<!--                            <div class="old-price" th:text="${sanPham.giaOld} + '₫'"></div>-->
+                            <div class="save-price" th:text="'Tiết kiệm: ' + ${sanPham.giamGia} + '%'"></div>
+                        </div>
+                        <div class="product-variants">
+                            <h6>Dung lượng</h6>
+                            <div class="variant-options">
+                                <button class="variant-btn">128GB</button>
+                                <button class="variant-btn active">256GB</button>
+                                <button class="variant-btn">512GB</button>
+                                <button class="variant-btn">1TB</button>
+                            </div>
+
+                            <h6>Màu sắc</h6>
+                            <div class="color-options">
+                                <button class="color-btn active" style="--color: #4A4A4A" title="Titan Tự Nhiên"></button>
+                                <button class="color-btn" style="--color: #2B2B2B" title="Titan Đen"></button>
+                                <button class="color-btn" style="--color: #F5F5F5" title="Titan Trắng"></button>
+                                <button class="color-btn" style="--color: #3A6EA5" title="Titan Xanh"></button>
+                            </div>
+                        </div>
+                        <div class="product-actions">
+                            <div class="quantity-wrapper">
+                                <button class="qty-btn minus">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <input type="number" class="quantity-input" value="1" min="1">
+                                <button class="qty-btn plus">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                            <button class="btn-add-cart">
+                                <i class="bi bi-cart-plus"></i>
+                                Thêm vào giỏ hàng
+                            </button>
+                            <button class="btn-buy-now">
+                                Mua ngay
+                            </button>
+                            <button class="btn-wishlist">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                        </div>
+
+                        <div class="product-features">
+                            <div class="feature-item">
+                                <i class="bi bi-shield-check"></i>
+                                <div class="feature-info">
+                                    <h6>Bảo hành chính hãng</h6>
+                                    <p>12 tháng tại trung tâm bảo hành Apple</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <i class="bi bi-truck"></i>
+                                <div class="feature-info">
+                                    <h6>Giao hàng miễn phí</h6>
+                                    <p>Trong nội thành Hà Nội và TP.HCM</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <i class="bi bi-arrow-repeat"></i>
+                                <div class="feature-info">
+                                    <h6>Đổi trả dễ dàng</h6>
+                                    <p>Trong vòng 15 ngày</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Description -->
+            <div class="product-description mt-5">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#description">
+                            Mô tả sản phẩm
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#specification">
+                            Thông số kỹ thuật
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#reviews">
+                            Đánh giá (120)
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="description">
+                        <p th:text="${sanPham.mota}"></p>
+                    </div>
+                    <div class="tab-pane fade" id="specification">
+                        <!-- Bảng thông số -->
+                    </div>
+                    <div class="tab-pane fade" id="reviews">
+                        <!-- Đánh giá sản phẩm -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <h5 class="footer-title">Về TechZone</h5>
+                    <p class="footer-text">
+                        TechZone - Hệ thống bán lẻ thiết bị công nghệ hàng đầu Việt Nam với hơn 100 cửa hàng trên toàn quốc.
+                    </p>
+                    <div class="social-links">
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                        <a href="#"><i class="bi bi-youtube"></i></a>
+                        <a href="#"><i class="bi bi-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="footer-title">Thông tin</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Về chúng tôi</a></li>
+                        <li><a href="#">Tuyển dụng</a></li>
+                        <li><a href="#">Tin tức</a></li>
+                        <li><a href="#">Liên hệ</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2">
+                    <h5 class="footer-title">Chính sách</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Bảo hành</a></li>
+                        <li><a href="#">Vận chuyển</a></li>
+                        <li><a href="#">Đổi trả</a></li>
+                        <li><a href="#">Bảo mật</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h5 class="footer-title">Đăng ký nhận tin</h5>
+                    <p class="footer-text">Nhận thông tin về sản phẩm mới và khuyến mãi</p>
+                    <form class="footer-form">
+                        <div class="input-group">
+                            <input type="email" class="form-control" placeholder="Email của bạn">
+                            <button class="btn btn-primary">Đăng ký</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
