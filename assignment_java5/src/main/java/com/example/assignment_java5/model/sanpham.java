@@ -1,12 +1,11 @@
 package com.example.assignment_java5.model;
 
-
 import jakarta.persistence.*;
-
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "san_pham")
@@ -18,23 +17,24 @@ import java.time.LocalDateTime;
 public class sanpham {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  long id;
+    private long id;
 
     @Column(name = "ten_san_pham")
-    private  String tensanpham;
+    private String tensanpham;
 
     @Column(name = "mo_ta")
-    private  String mota;
+    private String mota;
 
     @Column(nullable = false)
     private BigDecimal gia;
 
     @Column(name = "so_luong")
     private int soLuong;
+
     @Column(name = "ngay_tao")
     private LocalDateTime ngayTao = LocalDateTime.now();
 
-    private String anh;
+//    private String anh;
     private String thuongHieu;
     private String model;
     private String cauHinh;
@@ -42,8 +42,10 @@ public class sanpham {
     private BigDecimal giamGia = BigDecimal.ZERO;
 
     @ManyToOne
-    @JoinColumn(name = "phan_loai_id")  // Chú ý: Cột này phải khớp với cột trong cơ sở dữ liệu
-    private phanloaihang phanLoaiHang;  // PhanLoaiHang phải là entity ánh xạ với bảng `phan_loai_hang`
+    @JoinColumn(name = "phan_loai_id")  // Cột này phải khớp với DB
+    private phanloaihang phanLoaiHang;
 
-
+    // 🆕 Thêm quan hệ OneToMany để lưu nhiều ảnh sản phẩm
+    @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<HinhAnhSanPham> danhSachHinhAnh;
 }

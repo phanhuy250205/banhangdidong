@@ -3,6 +3,8 @@ package com.example.assignment_java5.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "nhan_vien")
 @Getter
@@ -30,6 +32,8 @@ public class nhanvien {
     private  String passwold;
 
     private  String avatar;
+
+    private LocalDate ngaysinh;
 
     @ManyToOne
     @JoinColumn(name = "chuc_vu_id")

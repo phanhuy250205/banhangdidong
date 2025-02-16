@@ -16,7 +16,7 @@ public class sanphamdto {
     private String moTa;
     private BigDecimal gia;
     private int soLuong;
-    private String anh;
+//    private String anh;
     private String thuongHieu;
     private String model;
     private String cauHinh;

@@ -132,12 +132,12 @@
                 <div class="col-lg-6">
                     <div class="product-gallery">
                         <div class="main-image">
-                            <img th:src="@{${sanPham.anh}}" alt="iPhone 15 Pro Max" id="mainImage">
+<!--                            <img th:src="@{${sanPham.anh}}" alt="iPhone 15 Pro Max" id="mainImage">-->
                             <span class="discount-badge" th:text="${sanPham.giamGia} + '%'"></span>
                         </div>
                         <div class="thumbnail-list">
                             <button class="thumb-item active">
-                                <img th:src="@{${sanPham.anh}}" alt="Thumbnail 1">
+<!--                                <img th:src="@{${sanPham.anh}}" alt="Thumbnail 1">-->
                             </button>
                             <!-- More thumbnails as needed -->
                         </div>
@@ -156,10 +156,10 @@
                                 <span class="rating-count">(120 đánh giá)</span>
                             </div>
                             <div class="brand">
-                                Thương hiệu: <a href="#">Apple</a>
+                                Thương hiệu: <a href="#" th:text="${sanPham.thuongHieu}"></a>
                             </div>
                             <div class="sku">
-                                Mã sản phẩm: <span th:text="${sanPham.id}"></span>
+                                Loại sản phẩm: <span th:text="${sanPham.phanLoaiHang.tenPhanLoai}"></span>
                             </div>
                         </div>
 
@@ -167,23 +167,6 @@
                             <div class="current-price" th:text="${sanPham.gia} + '₫'"></div>
 <!--                            <div class="old-price" th:text="${sanPham.giaOld} + '₫'"></div>-->
                             <div class="save-price" th:text="'Tiết kiệm: ' + ${sanPham.giamGia} + '%'"></div>
-                        </div>
-                        <div class="product-variants">
-                            <h6>Dung lượng</h6>
-                            <div class="variant-options">
-                                <button class="variant-btn">128GB</button>
-                                <button class="variant-btn active">256GB</button>
-                                <button class="variant-btn">512GB</button>
-                                <button class="variant-btn">1TB</button>
-                            </div>
-
-                            <h6>Màu sắc</h6>
-                            <div class="color-options">
-                                <button class="color-btn active" style="--color: #4A4A4A" title="Titan Tự Nhiên"></button>
-                                <button class="color-btn" style="--color: #2B2B2B" title="Titan Đen"></button>
-                                <button class="color-btn" style="--color: #F5F5F5" title="Titan Trắng"></button>
-                                <button class="color-btn" style="--color: #3A6EA5" title="Titan Xanh"></button>
-                            </div>
                         </div>
                         <div class="product-actions">
                             <div class="quantity-wrapper">

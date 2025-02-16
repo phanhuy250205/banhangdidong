@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="/css/home/styles.css" rel="stylesheet">
-
+    <link th:href="@{/css/home/styles.css}" rel="stylesheet">
 </head>
 <body>
 <!-- Navbar -->
@@ -96,13 +96,13 @@
                         </li>
                         <li th:if="${session.username != null}">
                             <a class="dropdown-item" href="/user/profile">
-                                <i class="fa-solid fa-user"></i>
-                               Thay Đổi Thông tin
+                                <i class="bi bi-person-fill"></i>
+                                Thay Đổi Thông tin
                             </a>
                         </li>
                         <li th:if="${session.username != null}">
                             <a class="dropdown-item" href="/orders">
-                                <i class="bi bi-bag"></i>
+                                <i class="bi bi-graph-down"></i>
                                 Thống kê
                             </a>
                         </li>
@@ -399,7 +399,7 @@
         <div class="row g-4">
             <!-- Sản phẩm 1 -->
             <div class="col-md-4">
-                <div class="product-card">
+                <div class="product-card" >
                     <div class="product-badge">-15%</div>
                     <img src="./assets/img/iphone-15.jpg" alt="iPhone 15 Pro Max" class="product-image">
                     <div class="product-info">
@@ -472,7 +472,7 @@
                 </div>
             </div>
 
-            <!-- Sản phẩm 4 (sẽ tự động xuống hàng) -->
+            <!-- Sản phẩm 4  -->
             <div class="col-md-4">
                 <div class="product-card">
                     <div class="product-badge">-25%</div>

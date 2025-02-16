@@ -8,6 +8,7 @@ import com.example.assignment_java5.repository.phanloaichucvurepository;
 import com.example.assignment_java5.service.FileUploadService;
 import com.example.assignment_java5.service.Userservice;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +38,7 @@ class UserserviceImpl implements Userservice {
         nhanvien.setSoDienThoai(nhanviendto.getSoDienThoai());
         nhanvien.setDiaChi(nhanviendto.getDiaChi());
         nhanvien.setPasswold(nhanviendto.getPasswold());  // Lưu mật khẩu không mã hóa
+        nhanvien.setNgaysinh(nhanviendto.getNgaysinh());
 
         // Lấy vai trò với id 3 từ bảng phanloaichucvu
         phanloaichucvu role = phanloaichucvurepository.findById(3L)
@@ -73,52 +75,62 @@ class UserserviceImpl implements Userservice {
     }
 
     @Override
-    public nhanvien update(nhanviendto nhanviendto, MultipartFile avatar, String newPassword) {
-        if (nhanviendto == null) {
-            throw new IllegalArgumentException("Thông tin người dùng không hợp lệ");
+    public nhanvien update(nhanviendto nhanviendto, MultipartFile avatarFile, String newPassword) {
+        nhanvien nhanvien = nhanvienRepository.findById(nhanviendto.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Người dùng không tồn tại"));
+
+        // 🔹 Cập nhật thông tin cơ bản
+        nhanvien.setTenNhanVien(nhanviendto.getTenNhanVien());
+        nhanvien.setEmail(nhanviendto.getEmail());
+        nhanvien.setSoDienThoai(nhanviendto.getSoDienThoai());
+        nhanvien.setDiaChi(nhanviendto.getDiaChi());
+        nhanvien.setNgaysinh(nhanviendto.getNgaysinh());
+
+        // 🔹 Cập nhật mật khẩu nếu có nhập mới
+        if (newPassword != null && !newPassword.isEmpty()) {
+            nhanvien.setPasswold(newPassword);
         }
 
-        Optional<nhanvien> existingNhanvien = nhanvienRepository.findById(nhanviendto.getId());
+        // 🔹 Nếu có file ảnh mới được upload
+        if (avatarFile != null && !avatarFile.isEmpty()) {
+            try {
+                String avatarFileName = fileUploadService.uploadFile(avatarFile, "avatars");
+                System.out.println("🟢 Đường dẫn ảnh mới: " + avatarFileName);
 
-        if (existingNhanvien.isPresent()) {
-            nhanvien nhanvien = existingNhanvien.get();
+                // 🔹 Lưu đường dẫn avatar vào database
+                nhanvien.setAvatar(avatarFileName);
+                System.out.println("🟢 Avatar đã cập nhật trong SQL: " + nhanvien.getAvatar());
 
-            // Cập nhật các thông tin cơ bản
-            nhanvien.setTenNhanVien(nhanviendto.getTenNhanVien());
-            nhanvien.setEmail(nhanviendto.getEmail());
-            nhanvien.setSoDienThoai(nhanviendto.getSoDienThoai());
-            nhanvien.setDiaChi(nhanviendto.getDiaChi());
-
-            // Cập nhật mật khẩu nếu có
-            if (newPassword != null && !newPassword.isEmpty()) {
-                // Kiểm tra mật khẩu có khác mật khẩu cũ không nếu cần
-                if (!newPassword.equals(nhanvien.getPasswold())) {
-                    nhanvien.setPasswold(newPassword);
-                }
+            } catch (IOException e) {
+                throw new RuntimeException("Lỗi tải lên avatar!", e);
             }
-
-            // Kiểm tra nếu có file avatar
-            if (avatar != null && !avatar.isEmpty()) {
-                try {
-                    // Gọi phương thức uploadFile để lưu avatar và nhận tên file
-                    String avatarFileName = fileUploadService.uploadFile(avatar, "nhanvien");
-
-                    // Lưu tên file avatar vào đối tượng nhanvien
-                    nhanvien.setAvatar(avatarFileName);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException("Lỗi tải lên avatar");
-                }
-            }
-
-            // Lưu thông tin đã cập nhật vào cơ sở dữ liệu
-            return nhanvienRepository.save(nhanvien);
-        } else {
-            // Nếu không tìm thấy nhân viên, ném exception hoặc trả về thông báo rõ ràng
-            throw new EntityNotFoundException("Nhân viên không tồn tại");
         }
+
+        // 🔹 Lưu cập nhật vào database
+        nhanvien updatedUser = nhanvienRepository.save(nhanvien);
+        System.out.println("🟢 Dữ liệu đã được lưu vào SQL với avatar: " + updatedUser.getAvatar());
+
+        return updatedUser;
     }
 
+
+    @Override
+    public nhanvien getCurrentUser(HttpSession session) {
+        return null;
+    }
+    @Override
+    public void deleteUser(Long id) {
+        if (!nhanvienRepository.existsById(id)) {
+            throw new EntityNotFoundException("Không tìm thấy nhân viên với ID: " + id);
+        }
+        nhanvienRepository.deleteById(id);
+    }
+
+    @Override
+    public nhanvien getById(Long id) {
+        return nhanvienRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy người dùng với ID: " + id));
+    }
 
 
 }
