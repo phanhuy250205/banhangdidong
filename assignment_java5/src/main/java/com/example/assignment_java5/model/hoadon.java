@@ -19,9 +19,9 @@ public class hoadon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "khach_hang_id")
-    private khachhang khachHang;
+//    @ManyToOne
+//    @JoinColumn(name = "khach_hang_id")
+//    private khachhang khachHang;
 
     private LocalDateTime ngayLap = LocalDateTime.now();
 

@@ -52,10 +52,13 @@
                     </button>
                 </form>
                 <div class="nav-buttons">
-                    <button class="btn-icon">
-                        <i class="bi bi-cart3"></i>
-                        <span class="badge">2</span>
-                    </button>
+
+                    <a href="/cart/view" class="cart-button">
+                        <i class="bi bi-cart3 cart-icon"></i>
+                        <span class="cart-badge" th:text="${session.cartCount != null ? session.cartCount : 0}"></span>
+                    </a>
+
+
                     <button class="btn-icon" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-person"></i>
                     </button>
@@ -153,7 +156,7 @@
                             </h1>
                             <p class="hero-text">Khám phá trải nghiệm đỉnh cao với chip A17 Pro, camera 48MP và thiết kế titan sang trọng.</p>
                             <div class="hero-buttons">
-                                <a th:href="@{/api/sanpham/}" class="btn btn-primary btn-lg">Khám phá ngay</a>
+                                <a th:href="@{/api/sanpham/list}" class="btn btn-primary btn-lg">Khám phá ngay</a>
                                 <a href="#" class="btn btn-outline-light btn-lg">Tìm hiểu thêm</a>
                             </div>
                         </div>
@@ -549,4 +552,51 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+<style>
+    /* Style cho nút giỏ hàng */
+    .cart-button {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #fff; /* Màu nền */
+        color: #333; /* Màu icon */
+        border: 2px solid #6f42c1; /* Viền màu tím */
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* Khi hover, thay đổi màu */
+    .cart-button:hover {
+        background-color: #6f42c1;
+        color: #fff;
+    }
+
+    /* Style cho icon giỏ hàng */
+    .cart-icon {
+        font-size: 22px;
+    }
+
+    /* Style cho badge số lượng */
+    .cart-badge {
+        position: absolute;
+        top: -14px;
+        right: -9px;
+        background-color: #dc3545; /* Màu đỏ nổi bật */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+</style>
 </html>

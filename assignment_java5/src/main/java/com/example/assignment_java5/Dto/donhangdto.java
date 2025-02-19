@@ -15,4 +15,5 @@ public class donhangdto {
     private Long khachHangId;
     private LocalDateTime ngayDat;
     private BigDecimal tongTien;
+    private  String trangThai;
 }

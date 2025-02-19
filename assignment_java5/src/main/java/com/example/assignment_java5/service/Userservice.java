@@ -5,6 +5,7 @@ import com.example.assignment_java5.model.nhanvien;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface Userservice {
@@ -23,4 +24,7 @@ public interface Userservice {
     // Xóa người dùng theo ID
     void deleteUser(Long id);
     nhanvien getById(Long id);
+
+
+
 }

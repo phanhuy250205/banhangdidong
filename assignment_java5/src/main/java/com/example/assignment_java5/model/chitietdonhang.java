@@ -32,4 +32,7 @@ public class chitietdonhang {
 
     @Column(nullable = false)
     private BigDecimal gia;
+
+
+
 }

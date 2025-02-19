@@ -1,8 +1,10 @@
 package com.example.assignment_java5.controller;
 
 import com.example.assignment_java5.Dto.sanphamdto;
+import com.example.assignment_java5.model.HinhAnhSanPham;
 import com.example.assignment_java5.model.phanloaihang;
 import com.example.assignment_java5.model.sanpham;
+import com.example.assignment_java5.service.HinhAnhSanPhamService;
 import com.example.assignment_java5.service.PhanLoaiHangService;
 import com.example.assignment_java5.service.sanphamservice;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,9 +27,10 @@ public class sanphamcontroller {
     @Autowired
     private PhanLoaiHangService phanLoaiHangService;
 
-
+    @Autowired
+    private HinhAnhSanPhamService hinhAnhSanPhamService;
     //lấy tất cả sản phẩm
-    @GetMapping("/")
+    @GetMapping("/list")
     public String getAllSanPham(Model model) {
         List<sanpham> sanPhamList = Sanphamservice.getallSanpham();
         List<phanloaihang> danhMucList = phanLoaiHangService.getAllDanhMuc();
@@ -58,13 +62,27 @@ public class sanphamcontroller {
 
     @GetMapping("/detail/{id}")
     public String getSanPhamDetail(@PathVariable Long id, Model model) {
-        sanpham SanPham = Sanphamservice.getSanPhamById(id).orElse(null);
-        if (SanPham == null) {
-            return "redirect:/sanpham"; // Nếu không tìm thấy sản phẩm, quay về danh sách
+        Optional<sanpham> sanPhamOpt = Sanphamservice.getSanPhamById(id);
+
+        if (sanPhamOpt.isEmpty()) {
+            return "redirect:/sanpham";
         }
-        model.addAttribute("sanPham", SanPham);
-        return "/Java5/product-detail"; // Trả về trang chi tiết sản phẩm
+
+        sanpham sanPham = sanPhamOpt.get();
+        List<HinhAnhSanPham> danhSachAnh = hinhAnhSanPhamService.getHinhAnhBySanPhamId(id);
+
+        // Kiểm tra dữ liệu danh sách ảnh
+        for (HinhAnhSanPham anh : danhSachAnh) {
+            System.out.println("Ảnh URL: " + anh.getUrlHinhAnh());
+        }
+
+        model.addAttribute("sanPham", sanPham);
+        model.addAttribute("danhSachAnh", danhSachAnh);
+
+        return "/Java5/product-detail";
     }
+
+
     //Lấy tất cả sản phẩm theo id
     @GetMapping("/{id}")
     public  String getsanphamid(@PathVariable int id , Model model){

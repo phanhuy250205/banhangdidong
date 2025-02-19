@@ -23,9 +23,9 @@
                             <!-- Họ và tên -->
                             <div class="mb-4">
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light">
-                                        <i class="fas fa-user"></i>
-                                    </span>
+            <span class="input-group-text bg-light">
+                <i class="fas fa-user"></i>
+            </span>
                                     <input type="text" class="form-control" th:field="*{tenNhanVien}" placeholder="Họ và tên" required>
                                 </div>
                             </div>
@@ -33,9 +33,9 @@
                             <!-- Email -->
                             <div class="mb-4">
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light">
-                                        <i class="fas fa-envelope"></i>
-                                    </span>
+            <span class="input-group-text bg-light">
+                <i class="fas fa-envelope"></i>
+            </span>
                                     <input type="email" class="form-control" th:field="*{email}" placeholder="Email" required>
                                 </div>
                             </div>
@@ -43,38 +43,39 @@
                             <!-- Số điện thoại -->
                             <div class="mb-4">
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light">
-                                        <i class="fas fa-phone"></i>
-                                    </span>
+            <span class="input-group-text bg-light">
+                <i class="fas fa-phone"></i>
+            </span>
                                     <input type="tel" class="form-control" th:field="*{soDienThoai}" placeholder="Số điện thoại" required>
                                 </div>
                             </div>
 
+                            <!-- Ngày sinh -->
                             <div class="mb-4">
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light">
-                                        <i class="fas fa-phone"></i>
-                                    </span>
+            <span class="input-group-text bg-light">
+                <i class="fas fa-calendar-alt"></i>
+            </span>
                                     <input type="date" class="form-control" th:field="*{ngaysinh}" placeholder="Ngày sinh của bạn" required>
                                 </div>
                             </div>
 
+                            <!-- Địa chỉ -->
                             <div class="mb-4">
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light">
-                                        <i class="fa-solid fa-map-location"></i>
-                                    </span>
-                                    <input type="tel" class="form-control" th:field="*{diaChi}" placeholder="Địa Chỉ của bạn" required>
+            <span class="input-group-text bg-light">
+                <i class="fa-solid fa-map-location"></i>
+            </span>
+                                    <input type="text" class="form-control" th:field="*{diaChi}" placeholder="Địa Chỉ của bạn" required>
                                 </div>
                             </div>
-
 
                             <!-- Mật khẩu -->
                             <div class="mb-4">
                                 <div class="input-group">
-                                    <span class="input-group-text bg-light">
-                                        <i class="fas fa-lock"></i>
-                                    </span>
+            <span class="input-group-text bg-light">
+                <i class="fas fa-lock"></i>
+            </span>
                                     <input type="password" class="form-control" th:field="*{passwold}" placeholder="Mật khẩu" required>
                                 </div>
                             </div>
@@ -89,6 +90,15 @@
                                 </div>
                             </div>
 
+                            <!-- Chọn Vai Trò (Nhân viên / Khách hàng) -->
+                            <div class="mb-4">
+                                <label for="chucVu" class="form-label">Chọn vai trò</label>
+                                <select class="form-control" th:field="*{roleId}" required id="chucVu">
+                                    <option value="">-- Chọn vai trò --</option>
+                                    <option th:each="role : ${roleList}" th:value="${role.id}" th:text="${role.tenChucVu}"></option>
+                                </select>
+                            </div>
+
                             <!-- Đồng ý điều khoản -->
                             <div class="mb-4">
                                 <div class="form-check">
@@ -98,32 +108,8 @@
                                     </label>
                                 </div>
                             </div>
-
                             <!-- Nút Đăng ký -->
                             <button type="submit" class="btn btn-primary w-100 mb-3">Đăng ký</button>
-
-                            <!-- Divider -->
-                            <div class="divider my-4">
-                                <span>hoặc đăng ký với</span>
-                            </div>
-
-                            <!-- Đăng ký với Google và Facebook -->
-                            <div class="social-buttons">
-                                <button type="button" class="btn btn-social btn-google w-100 mb-3">
-                                    <img src="https://www.google.com/favicon.ico" alt="Google" class="social-icon">
-                                    Tiếp tục với Google
-                                </button>
-                                <button type="button" class="btn btn-social btn-facebook w-100 mb-4">
-                                    <img src="https://www.facebook.com/favicon.ico" alt="Facebook" class="social-icon">
-                                    Tiếp tục với Facebook
-                                </button>
-                            </div>
-
-                            <!-- Link đăng nhập -->
-                            <div class="text-center">
-                                <span class="text-muted">Đã có tài khoản? </span>
-                                <a href="login.html" class="text-primary text-decoration-none">Đăng nhập</a>
-                            </div>
                         </form>
 
                     </div>

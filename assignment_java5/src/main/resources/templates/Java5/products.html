@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="/css/product/product.css" rel="stylesheet">
+<!--    <link th:href="@{/css/home/styles.css}" rel="stylesheet">-->
 
 </head>
 <body>
@@ -15,7 +16,8 @@
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
             <a class="navbar-brand" href="/">
-                Tech<span class="text-primary">Zone</span>
+                TechZone
+                <span class="text-primary">.vn</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -23,7 +25,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Trang chủ</a>
+                        <a class="nav-link active" href="/">Trang chủ</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
@@ -39,20 +41,28 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#">Khuyến mãi</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Tin tức</a>
+                    </li>
                 </ul>
-                <div class="nav-right">
+                <div class="d-flex align-items-center gap-3">
                     <form class="search-form">
                         <input type="search" placeholder="Tìm kiếm sản phẩm...">
-                        <button type="submit"><i class="bi bi-search"></i></button>
+                        <button type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
                     </form>
                     <div class="nav-buttons">
-                        <a href="#" class="btn-cart">
-                            <i class="bi bi-cart3"></i>
-                            <span class="badge">2</span>
+                        <a href="/cart/view" class="cart-button">
+                            <i class="bi bi-cart3 cart-icon"></i>
+                            <span class="cart-badge" th:text="${session.cartCount != null ? session.cartCount : '0'}"></span>
                         </a>
-                        <a href="#" class="btn-account" data-bs-toggle="dropdown" aria-expanded="false">
+
+
+
+                        <button class="btn-icon" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person"></i>
-                        </a>
+                        </button>
                         <ul class="dropdown-menu dropdown-menu-end user-menu">
                             <li class="dropdown-header">
                                 <div class="user-info">
@@ -60,46 +70,62 @@
                                         <i class="bi bi-person-circle"></i>
                                     </div>
                                     <div class="user-details">
-                                        <h6 class="mb-0">Chưa đăng nhập</h6>
-                                        <small>Đăng nhập để mua sắm</small>
+                                        <!-- Kiểm tra nếu người dùng đã đăng nhập -->
+                                        <h6 class="mb-0" th:text="${session.username != null ? session.username : 'Chưa đăng nhập'}"></h6>
+                                        <small th:text="${session.username != null ? '' : 'Đăng nhập để mua sắm'}"></small>
                                     </div>
                                 </div>
                             </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item" href="/login">
+                            <!-- Nếu chưa đăng nhập, hiển thị "Đăng nhập" và "Đăng ký" -->
+                            <li th:if="${session.username == null}">
+                                <a class="dropdown-item" href="/user/login">
                                     <i class="bi bi-box-arrow-in-right"></i>
                                     Đăng nhập
                                 </a>
                             </li>
-                            <li>
-                                <a class="dropdown-item" href="/register">
+                            <li th:if="${session.username == null}">
+                                <a class="dropdown-item" href="/user/register">
                                     <i class="bi bi-person-plus"></i>
                                     Đăng ký
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li>
+                            <!-- Nếu đã đăng nhập, hiển thị các mục liên quan đến tài khoản -->
+                            <li th:if="${session.username != null}">
                                 <a class="dropdown-item" href="/orders">
                                     <i class="bi bi-bag"></i>
                                     Đơn hàng của tôi
                                 </a>
                             </li>
-                            <li>
+                            <li th:if="${session.username != null}">
+                                <a class="dropdown-item" href="/user/profile">
+                                    <i class="bi bi-person-fill"></i>
+                                    Thay Đổi Thông tin
+                                </a>
+                            </li>
+                            <li th:if="${session.username != null}">
+                                <a class="dropdown-item" href="/orders">
+                                    <i class="bi bi-graph-down"></i>
+                                    Thống kê
+                                </a>
+                            </li>
+                            <li th:if="${session.username != null}">
                                 <a class="dropdown-item" href="/wishlist">
                                     <i class="bi bi-heart"></i>
                                     Sản phẩm yêu thích
                                 </a>
                             </li>
-                            <li>
+                            <li th:if="${session.username != null}">
                                 <a class="dropdown-item" href="/profile">
                                     <i class="bi bi-person-gear"></i>
                                     Cài đặt tài khoản
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item text-danger" href="/logout">
+                            <!-- Nếu đã đăng nhập, hiển thị "Đăng xuất" -->
+                            <li th:if="${session.username != null}">
+                                <a class="dropdown-item text-danger" href="/user/logout">
                                     <i class="bi bi-box-arrow-right"></i>
                                     Đăng xuất
                                 </a>
@@ -231,10 +257,18 @@
                                     <span class="current-price" th:text="${Sanpham.gia}"></span>
                                     <span class="old-price" th:text="${Sanpham.giamGia}"></span>
                                 </div>
-                                <button class="btn-add-cart">
-                                    <i class="bi bi-cart-plus"></i>
-                                    Thêm vào giỏ
-                                </button>
+                                <form th:action="@{/cart/add}" method="post">
+                                    <input type="hidden" name="sanPhamId" th:value="${Sanpham.id}">
+
+                                    <button type="submit" class="btn-add-cart">
+                                        🛒 Thêm vào giỏ
+                                    </button>
+                                </form>
+
+
+                                <!-- 🔍 Thêm debug để kiểm tra ID sản phẩm -->
+                                <p>🟢 Debug ID sản phẩm: <span th:text="${Sanpham.id}"></span></p>
+
                             </div>
                         </div>
 
@@ -306,7 +340,72 @@
             </div>
         </div>
     </footer>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".btn-add-cart").click(function (event) {
+                event.preventDefault(); // Ngăn form tải lại trang
+
+                var form = $(this).closest("form");
+                var url = form.attr("action");
+                var formData = form.serialize();
+
+                $.post(url, formData, function (response) {
+                    $.get("/cart/count", function (data) {
+                        $(".cart-badge").text(data); // Cập nhật số lượng sản phẩm trên giỏ hàng
+                    });
+                });
+            });
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+<style>
+
+    /* Style cho nút giỏ hàng */
+    .cart-button {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #fff; /* Màu nền */
+        color: #333; /* Màu icon */
+        border: 2px solid #6f42c1; /* Viền màu tím */
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* Khi hover, thay đổi màu */
+    .cart-button:hover {
+        background-color: #6f42c1;
+        color: #fff;
+    }
+
+    /* Style cho icon giỏ hàng */
+    .cart-icon {
+        font-size: 22px;
+    }
+
+    /* Style cho badge số lượng */
+    .cart-badge {
+        position: absolute;
+        top: -14px;
+        right: -9px;
+        background-color: #dc3545; /* Màu đỏ nổi bật */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+</style>
 </html>

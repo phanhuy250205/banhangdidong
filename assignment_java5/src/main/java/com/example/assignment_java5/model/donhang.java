@@ -20,11 +20,18 @@ public class donhang {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "khach_hang_id")
-    private khachhang khachHang;
+    @JoinColumn(name = "nhan_vien_id") // Đổi từ khach_hang_id sang nhan_vien_id
+    private nhanvien nhanVien; // Liên kết với entity nhanvien thay vì khachhang
 
     private LocalDateTime ngayDat = LocalDateTime.now();
 
     @Column(nullable = false)
     private BigDecimal tongTien;
+    @Column(name = "trang_thai") // Cập nhật theo tên mới trong DB
+    private String trangThai;
+
+
+
+
+
 }

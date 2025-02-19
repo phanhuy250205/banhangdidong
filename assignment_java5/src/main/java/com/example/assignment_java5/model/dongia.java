@@ -23,8 +23,8 @@ public class dongia {
     private sanpham sanPham;
 
     @ManyToOne
-    @JoinColumn(name = "khach_hang_id")
-    private khachhang khachHang;
+    @JoinColumn(name = "nhan_vien_id") // Đổi từ khach_hang_id sang nhan_vien_id
+    private nhanvien nhanVien; // Liên kết với entity nhanvien thay vì khachhang
 
     @Column(nullable = false)
     private String noiDung;
@@ -33,4 +33,6 @@ public class dongia {
     private int danhGia;
 
     private LocalDateTime ngayDanhGia = LocalDateTime.now();
+    @Column(name = "trang_thai", nullable = false)
+    private String trangThai;
 }

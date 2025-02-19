@@ -3,6 +3,7 @@ package com.example.assignment_java5.controller;
 import com.example.assignment_java5.Dto.nhanviendto;
 import com.example.assignment_java5.model.nhanvien;
 import com.example.assignment_java5.repository.nhanvienrepository;
+import com.example.assignment_java5.repository.phanloaichucvurepository;
 import com.example.assignment_java5.service.FileUploadService;
 import com.example.assignment_java5.service.Userservice;
 import jakarta.persistence.EntityNotFoundException;
@@ -28,12 +29,17 @@ public class UsersController {
     @Autowired
     private FileUploadService fileUploadService;
 
+    @Autowired
+    phanloaichucvurepository phanloaichucvurepository;
+
     // ✅ Trang đăng ký
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
         model.addAttribute("nhanviendto", new nhanviendto());
+        model.addAttribute("roleList", phanloaichucvurepository.findAll()); // 🟢 Lấy tất cả roles
         return "/Java5/signup";
     }
+
 
     // ✅ Trang đăng nhập
     @GetMapping("/login")
@@ -41,23 +47,6 @@ public class UsersController {
         return "/Java5/login";
     }
 
-    @GetMapping("/profile")
-    public String viewProfile(HttpSession session, Model model) {
-        nhanviendto currentUserDTO = (nhanviendto) session.getAttribute("currentUser");
-
-        if (currentUserDTO == null) {
-            return "redirect:/user/login"; // Nếu chưa đăng nhập, chuyển hướng đến login
-        }
-
-        // 🔹 Lấy dữ liệu mới nhất từ database thay vì từ Session
-        nhanvien currentUser = userservice.getById(currentUserDTO.getId());
-
-        // 🔹 Debug để kiểm tra avatar có null không
-        System.out.println("🟢 Avatar lấy từ database sau cập nhật: " + currentUser.getAvatar());
-
-        model.addAttribute("updatedUser", currentUser);
-        return "/Java5/profile";
-    }
 
 
 
@@ -79,21 +68,58 @@ public class UsersController {
         return "redirect:/user/login";
     }
 
+    @GetMapping("/profile")
+    public String viewProfile(HttpSession session, Model model) {
+        Object currentUserObject = session.getAttribute("currentUser");
+
+        if (currentUserObject == null) {
+            return "redirect:/user/login"; // Nếu chưa đăng nhập, chuyển hướng đến login
+        }
+
+        nhanvien currentUser;
+        if (currentUserObject instanceof nhanviendto) {
+            // Nếu session đang lưu DTO, lấy ID để truy vấn lại dữ liệu gốc
+            nhanviendto currentUserDTO = (nhanviendto) currentUserObject;
+            currentUser = userservice.getById(currentUserDTO.getId());
+        } else if (currentUserObject instanceof nhanvien) {
+            // Nếu session đang lưu nhanvien, sử dụng luôn
+            currentUser = (nhanvien) currentUserObject;
+        } else {
+            return "redirect:/user/login"; // Tránh lỗi nếu có kiểu dữ liệu không hợp lệ
+        }
+
+        // Debug avatar
+        System.out.println("🟢 Avatar lấy từ database sau cập nhật: " + currentUser.getAvatar());
+
+        model.addAttribute("updatedUser", currentUser);
+        return "/Java5/profile";
+    }
+
+
+
     // ✅ Xử lý đăng nhập
     @PostMapping("/login")
     public String loginUser(@RequestParam String email, @RequestParam String password, Model model, HttpSession session) {
-        Optional<nhanviendto> user = userservice.login(email, password);
+        Optional<nhanviendto> userDTO = userservice.login(email, password); // Trả về DTO
 
-        if (user.isPresent()) {
-            nhanviendto userDTO = user.get();
-            session.setAttribute("username", userDTO.getTenNhanVien());
-            session.setAttribute("currentUser", userDTO);
-            return "/Java5/index";
-        } else {
-            model.addAttribute("error", "Thông tin đăng nhập không chính xác");
-            return "/Java5/login";
+        if (userDTO.isPresent()) {
+            nhanviendto userDto = userDTO.get();
+
+            // Tìm entity nhanvien từ database dựa trên DTO
+            Optional<nhanvien> userEntity = nhanviendrepository.findById(userDto.getId());
+
+            if (userEntity.isPresent()) {
+                session.setAttribute("username", userEntity.get().getTenNhanVien());
+                session.setAttribute("currentUser", userEntity.get()); // Lưu entity vào session
+                return "/Java5/index";
+            }
         }
+
+        model.addAttribute("error", "Thông tin đăng nhập không chính xác");
+        return "/Java5/login";
     }
+
+
 
 
     @PostMapping("/update")

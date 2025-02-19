@@ -21,7 +21,7 @@ public class nhanviendto {
     private String passwold;
     private String confirmPassword; // Mật khẩu xác nhận (không lưu vào database)
     private boolean termsAccepted;
-
+    private Long roleId;
     private MultipartFile avatarFile; // Nhận file upload từ form
     private String avatar; // Lưu đường dẫn vào database (VARCHAR)
 }

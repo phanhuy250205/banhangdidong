@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.management.relation.Role;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,26 +32,27 @@ class UserserviceImpl implements Userservice {
 
     @Override
     public nhanvien register(nhanviendto nhanviendto) {
-        // Tạo đối tượng nhanvien từ nhanviendto
         nhanvien nhanvien = new nhanvien();
         nhanvien.setTenNhanVien(nhanviendto.getTenNhanVien());
         nhanvien.setEmail(nhanviendto.getEmail());
         nhanvien.setSoDienThoai(nhanviendto.getSoDienThoai());
         nhanvien.setDiaChi(nhanviendto.getDiaChi());
-        nhanvien.setPasswold(nhanviendto.getPasswold());  // Lưu mật khẩu không mã hóa
+        nhanvien.setPasswold(nhanviendto.getPasswold());
         nhanvien.setNgaysinh(nhanviendto.getNgaysinh());
 
-        // Lấy vai trò với id 3 từ bảng phanloaichucvu
-        phanloaichucvu role = phanloaichucvurepository.findById(3L)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-        String currentDatetime = java.time.LocalDate.now().toString();
-        nhanvien.setNgayTao(currentDatetime);
-        // Gán vai trò cho nhân viên
-        nhanvien.setChucVu(role);
+        // ✅ Lấy role từ `phanloaichucvurepository`
+        Long roleId = (nhanviendto.getRoleId() != null) ? nhanviendto.getRoleId() : 4L; // Mặc định là 4 nếu null
 
-        // Lưu đối tượng nhanvien vào cơ sở dữ liệu
+        phanloaichucvu role = phanloaichucvurepository.findById(roleId)
+                .orElseThrow(() -> new RuntimeException("❌ Vai trò không tồn tại!"));
+
+        nhanvien.setChucVu(role);
+        nhanvien.setNgayTao(java.time.LocalDate.now().toString());
+
         return nhanvienRepository.save(nhanvien);
     }
+
+
 
 
     @Override
@@ -131,6 +133,16 @@ class UserserviceImpl implements Userservice {
         return nhanvienRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy người dùng với ID: " + id));
     }
+
+
+
+
+
+
+
+
+
+
 
 
 }
