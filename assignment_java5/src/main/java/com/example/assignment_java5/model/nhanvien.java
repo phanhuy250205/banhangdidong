@@ -2,7 +2,6 @@ package com.example.assignment_java5.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
 
 @Entity

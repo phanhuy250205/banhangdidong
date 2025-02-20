@@ -148,6 +148,11 @@ body {
 .btn-quantity:hover {
     background: #e9ecef;
 }
+.btn-quantity {
+    pointer-events: auto !important;
+    opacity: 1 !important;
+    cursor: pointer;
+}
 
 .quantity-input {
     width: 50px;

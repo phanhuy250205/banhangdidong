@@ -126,4 +126,22 @@ public class CartServiceImpl implements CartService {
     public int getCartCount(Long nhanVienId) {
         return cartStorage.getOrDefault(nhanVienId, new HashMap<>()).values().stream().mapToInt(Integer::intValue).sum();
     }
+    public BigDecimal calculateTotalPrice(Long nhanVienId) {
+        Map<Long, Integer> cartItems = getCartItems(nhanVienId);
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (Map.Entry<Long, Integer> entry : cartItems.entrySet()) {
+            Long productId = entry.getKey();
+            int quantity = entry.getValue();
+            sanpham sanPham = sanPhamRepository.findById(productId)
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sản phẩm."));
+
+            BigDecimal productTotal = sanPham.getGia().multiply(BigDecimal.valueOf(quantity));
+            total = total.add(productTotal);
+        }
+
+        return total;
+    }
+
+
 }

@@ -121,6 +121,13 @@
                                 Cài đặt tài khoản
                             </a>
                         </li>
+
+                        <li th:if="${session.username != null}">
+                            <a class="dropdown-item" th:href="@{/api/sanpham/uploadsanpham}">
+                                <i class="bi bi-person-gear"></i>
+                                 Upload Sản Phẩm
+                            </a>
+                        </li>
                         <li><hr class="dropdown-divider"></li>
                         <!-- Nếu đã đăng nhập, hiển thị "Đăng xuất" -->
                         <li th:if="${session.username != null}">
