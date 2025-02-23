@@ -1,138 +1,39 @@
 package com.example.assignment_java5.service.impl;
 
-import com.example.assignment_java5.model.HinhAnhSanPham;
+
 import com.example.assignment_java5.model.sanpham;
-import com.example.assignment_java5.repository.sanphamrepository;
-import com.example.assignment_java5.service.FileUploadService;
-import com.example.assignment_java5.service.HinhAnhSanPhamService;
-import com.example.assignment_java5.service.sanphamservice;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-@Service
-@Transactional
-public class sanphamImpl implements sanphamservice {
+public interface SanPhamService {
+    // ✅ Lấy tất cả sản phẩm (không phân trang)
+    List<sanpham> getAllSanPham();
 
-    @Autowired
-    private sanphamrepository sanPhamRepository;
+    // ✅ Lấy sản phẩm theo ID
+    Optional<sanpham> getSanPhamById(Long id);
 
-    @Autowired
-    private FileUploadService fileUploadService;
+    // ✅ Tạo sản phẩm mới (hỗ trợ tải lên ảnh)
+    sanpham createSanPham(sanpham sanPham, List<MultipartFile> files);
 
-    @Autowired
-    private HinhAnhSanPhamService hinhAnhSanPhamService;
+    // ✅ Cập nhật sản phẩm (hỗ trợ tải lên ảnh)
+    sanpham updateSanPham(Long id, sanpham sanPham, List<MultipartFile> files);
 
-    @Override
-    public List<sanpham> getallSanpham() {
-        return sanPhamRepository.findAll();
-    }
+    // ✅ Xóa sản phẩm theo ID
+    void deleteSanPhamById(Long id);
 
-    @Override
-    public Optional<sanpham> getSanPhamById(Long id) {
-        return sanPhamRepository.findById(Math.toIntExact(id));
-    }
+    // ✅ Tìm kiếm + Lọc + Phân trang
+    Page<sanpham> searchAndFilterSanPham(String searchTerm, Double minGia, Double maxGia, List<String> thuongHieu, int page, int size);
 
+    // ✅ Lấy tất cả sản phẩm có phân trang
+    Page<sanpham> getAllSanPham(int page, int size);
 
-    public sanpham createSanPham(sanpham sanPham, List<MultipartFile> files) {
-        // ✅ Lưu sản phẩm trước
-        sanpham savedSanPham = sanPhamRepository.save(sanPham);
+    // ✅ Lấy sản phẩm theo danh mục (không phân trang)
+    List<sanpham> getSanPhamByPhanLoaiHang_Id(Long phanLoaiId);
 
-        // ✅ Nếu có ảnh, lưu vào bảng `hinh_anh_san_pham`
-        if (files != null && !files.isEmpty()) {
-            for (MultipartFile file : files) {
-                if (!file.isEmpty()) {
-                    try {
-                        // ✅ Lưu ảnh vào thư mục và lấy đường dẫn
-                        String imageUrl = fileUploadService.uploadFile(file, "products");
-
-                        // ✅ Tạo đối tượng `HinhAnhSanPham` và lưu vào DB
-                        HinhAnhSanPham hinhAnhSanPham = new HinhAnhSanPham();
-                        hinhAnhSanPham.setSanPham(savedSanPham);
-                        hinhAnhSanPham.setUrlHinhAnh(imageUrl);
-                        hinhAnhSanPhamService.saveHinhAnh(hinhAnhSanPham);
-
-                    } catch (IOException e) {
-                        throw new RuntimeException("❌ Lỗi khi upload ảnh: " + e.getMessage());
-                    }
-                }
-            }
-        }
-        return savedSanPham;
-    }
-
-
-    public sanpham updateSanPham(Long id, sanpham sanPham, List<MultipartFile> files) {
-        Optional<sanpham> existingSanPham = sanPhamRepository.findById(Math.toIntExact(id));
-        if (existingSanPham.isPresent()) {
-            sanpham updateSanPham = existingSanPham.get();
-            updateSanPham.setTensanpham(sanPham.getTensanpham());
-            updateSanPham.setMota(sanPham.getMota());
-            updateSanPham.setGia(sanPham.getGia());
-            updateSanPham.setSoLuong(sanPham.getSoLuong());
-            updateSanPham.setThuongHieu(sanPham.getThuongHieu());
-            updateSanPham.setModel(sanPham.getModel());
-            updateSanPham.setCauHinh(sanPham.getCauHinh());
-            updateSanPham.setGiamGia(sanPham.getGiamGia());
-
-            // ✅ Nếu có ảnh mới, xóa ảnh cũ và lưu ảnh mới
-            if (files != null && !files.isEmpty()) {
-                // Xóa ảnh cũ
-                List<HinhAnhSanPham> oldImages = hinhAnhSanPhamService.getHinhAnhBySanPhamId(id);
-                for (HinhAnhSanPham oldImage : oldImages) {
-                    fileUploadService.deleteFile(oldImage.getUrlHinhAnh());
-                    hinhAnhSanPhamService.deleteHinhAnh(oldImage.getId());
-                }
-
-                // Lưu ảnh mới
-                for (MultipartFile file : files) {
-                    if (!file.isEmpty()) {
-                        try {
-                            String imageUrl = fileUploadService.uploadFile(file, "products");
-                            HinhAnhSanPham hinhAnhSanPham = new HinhAnhSanPham();
-                            hinhAnhSanPham.setSanPham(updateSanPham);
-                            hinhAnhSanPham.setUrlHinhAnh(imageUrl);
-                            hinhAnhSanPhamService.saveHinhAnh(hinhAnhSanPham);
-                        } catch (IOException e) {
-                            throw new RuntimeException("❌ Lỗi khi upload ảnh: " + e.getMessage());
-                        }
-                    }
-                }
-            }
-            return sanPhamRepository.save(updateSanPham);
-        }
-        return null;
-    }
-
-    @Override
-    public void deleteSanPhamById(Long id) {
-        Optional<sanpham> optionalSanPham = sanPhamRepository.findById(Math.toIntExact(id));
-        if (optionalSanPham.isPresent()) {
-            sanpham sanPham = optionalSanPham.get();
-
-            // ✅ Xóa ảnh khỏi thư mục trước khi xóa sản phẩm
-            List<HinhAnhSanPham> hinhAnhs = hinhAnhSanPhamService.getHinhAnhBySanPhamId(id);
-            for (HinhAnhSanPham hinhAnh : hinhAnhs) {
-                fileUploadService.deleteFile(hinhAnh.getUrlHinhAnh());
-                hinhAnhSanPhamService.deleteHinhAnh(hinhAnh.getId());
-            }
-
-            sanPhamRepository.deleteById(Math.toIntExact(id));
-        } else {
-            throw new RuntimeException("❌ Không tìm thấy sản phẩm để xóa!");
-        }
-    }
-
-    @Override
-    public List<sanpham> searchSanPham(String searchTerm) {
-        return sanPhamRepository.findByTensanphamContainingOrMotaContaining(searchTerm, searchTerm);
-    }
-
-
-
+    // ✅ Lấy sản phẩm theo danh mục (có phân trang)
+    Page<sanpham> getSanPhamByPhanLoaiHang_Id(Long phanLoaiId, Pageable pageable);
 }
