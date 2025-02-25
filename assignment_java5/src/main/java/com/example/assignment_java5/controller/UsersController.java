@@ -37,14 +37,14 @@ public class UsersController {
     public String showRegisterPage(Model model) {
         model.addAttribute("nhanviendto", new nhanviendto());
         model.addAttribute("roleList", phanloaichucvurepository.findAll()); // 🟢 Lấy tất cả roles
-        return "/Java5/signup";
+        return "signup";
     }
 
 
     // ✅ Trang đăng nhập
     @GetMapping("/login")
     public String showLoginPage() {
-        return "/Java5/login";
+        return "login";
     }
 
 
@@ -56,12 +56,12 @@ public class UsersController {
     public String registerUser(@ModelAttribute("nhanviendto") nhanviendto nhanviendto, Model model) {
         if (!nhanviendto.getPasswold().equals(nhanviendto.getConfirmPassword())) {
             model.addAttribute("error", "Mật khẩu và xác nhận mật khẩu không khớp");
-            return "/Java5/signup";
+            return "signup";
         }
 
         if (!nhanviendto.isTermsAccepted()) {
             model.addAttribute("error", "Bạn phải đồng ý với điều khoản");
-            return "/Java5/signup";
+            return "signup";
         }
 
         nhanvien newuser = userservice.register(nhanviendto);
@@ -92,7 +92,7 @@ public class UsersController {
         System.out.println("🟢 Avatar lấy từ database sau cập nhật: " + currentUser.getAvatar());
 
         model.addAttribute("updatedUser", currentUser);
-        return "/Java5/profile";
+        return "profile";
     }
 
 
@@ -111,7 +111,7 @@ public class UsersController {
             if (userEntity.isPresent()) {
                 session.setAttribute("username", userEntity.get().getTenNhanVien());
                 session.setAttribute("currentUser", userEntity.get()); // Lưu entity vào session
-                return "/Java5/index";
+                return "index";
             }
         }
 
@@ -132,12 +132,12 @@ public class UsersController {
 
         if (nhanviendto.getId() == null) {
             model.addAttribute("error", "ID không hợp lệ");
-            return "/Java5/profile";
+            return "profile";
         }
 
         if (newPassword != null && !newPassword.isEmpty() && !newPassword.equals(confirmPassword)) {
             model.addAttribute("error", "Mật khẩu không khớp!");
-            return "/Java5/profile";
+            return "profile";
         }
 
         try {
@@ -154,7 +154,7 @@ public class UsersController {
             return "redirect:/user/profile";
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi hệ thống: " + e.getMessage());
-            return "/Java5/profile";
+            return "profile";
         }
     }
 

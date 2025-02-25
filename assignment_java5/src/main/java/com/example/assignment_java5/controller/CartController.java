@@ -183,7 +183,7 @@ public class CartController {
         System.out.println("🟢 Tạm tính: " + totalAmount + "₫");
         System.out.println("🟢 Tổng cộng sau giảm giá: " + finalTotal + "₫");
 
-        return "/Java5/cart"; // Chuyển đến trang giỏ hàng
+        return "cart"; // Chuyển đến trang giỏ hàng
     }
 
     private nhanvien getCurrentUser(HttpSession session) {
@@ -316,16 +316,33 @@ public class CartController {
         ).stream().map(chitietdonhang::getSanPham).distinct().count();
     }
 
-    @GetMapping("/checkout")
-    public String checkoutPage(Model model, @RequestParam Long nhanVienId) {
-        BigDecimal totalAmount = cartService.calculateTotalPrice(nhanVienId); // Tính tổng tiền
-        BigDecimal discount = new BigDecimal(2000000); // Giảm giá cố định
-        BigDecimal finalTotal = totalAmount.subtract(discount).max(BigDecimal.ZERO); // Tránh giá trị âm
+    @PostMapping("/checkout")
+    @Transactional
+    public String checkout(HttpSession session) {
+        nhanvien currentUser = (nhanvien) session.getAttribute("currentUser");
+        if (currentUser == null) {
+            return "redirect:/user/login"; // Nếu chưa đăng nhập, yêu cầu đăng nhập
+        }
 
-        model.addAttribute("totalAmount", totalAmount);
-        model.addAttribute("finalTotal", finalTotal);
-        return "/Java5/checkout";
+        // 🔍 Kiểm tra xem nhân viên có đơn hàng "Chưa thanh toán" không
+        Optional<donhang> optionalDonHang = donHangRepository.findByNhanVienAndTrangThai(currentUser, "Chưa thanh toán");
+        if (optionalDonHang.isEmpty()) {
+            return "redirect:/cart/view"; // Nếu không có đơn hàng, quay lại giỏ hàng
+        }
+
+        // ✅ Cập nhật trạng thái đơn hàng
+        donhang donHang = optionalDonHang.get();
+        donHang.setTrangThai("Chờ xác nhận");
+        donHangRepository.save(donHang);
+
+        // ✅ Xóa giỏ hàng khỏi session
+        session.setAttribute("cartCount", 0);
+
+        // ✅ Chuyển hướng đến trang hóa đơn
+        return "redirect:/invoice/view?donHangId=" + donHang.getId();
     }
+
+
 
 
 

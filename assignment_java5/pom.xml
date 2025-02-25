@@ -85,6 +85,11 @@
             <artifactId>surefire-shared-utils</artifactId>
             <version>3.2.5</version>
         </dependency>
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>itext7-core</artifactId>
+			<version>7.1.16</version>
+		</dependency>
 
     </dependencies>
 

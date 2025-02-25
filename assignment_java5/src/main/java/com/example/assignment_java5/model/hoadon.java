@@ -19,9 +19,6 @@ public class hoadon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "khach_hang_id")
-//    private khachhang khachHang;
 
     private LocalDateTime ngayLap = LocalDateTime.now();
 
@@ -31,4 +28,9 @@ public class hoadon {
     @ManyToOne
     @JoinColumn(name = "nhan_vien_id")
     private nhanvien nhanVien;
+
+    // Người mua hàng (có thể là nhân viên hoặc khách hàng dựa trên role)
+    @ManyToOne
+    @JoinColumn(name = "nguoi_mua_id", nullable = false)
+    private nhanvien nguoiMua;
 }

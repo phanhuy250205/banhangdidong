@@ -1,39 +1,177 @@
 package com.example.assignment_java5.service.impl;
 
-
+import com.example.assignment_java5.model.HinhAnhSanPham;
 import com.example.assignment_java5.model.sanpham;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.example.assignment_java5.repository.sanphamrepository;
+import com.example.assignment_java5.service.FileUploadService;
+import com.example.assignment_java5.service.HinhAnhSanPhamService;
+import com.example.assignment_java5.service.sanphamservice;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-public interface SanPhamService {
-    // ✅ Lấy tất cả sản phẩm (không phân trang)
-    List<sanpham> getAllSanPham();
+@Service
+@Transactional
+public class sanphamImpl implements sanphamservice {
 
-    // ✅ Lấy sản phẩm theo ID
-    Optional<sanpham> getSanPhamById(Long id);
+    @Autowired
+    private sanphamrepository sanPhamRepository;
 
-    // ✅ Tạo sản phẩm mới (hỗ trợ tải lên ảnh)
-    sanpham createSanPham(sanpham sanPham, List<MultipartFile> files);
+    @Autowired
+    private FileUploadService fileUploadService;
 
-    // ✅ Cập nhật sản phẩm (hỗ trợ tải lên ảnh)
-    sanpham updateSanPham(Long id, sanpham sanPham, List<MultipartFile> files);
+    @Autowired
+    private HinhAnhSanPhamService hinhAnhSanPhamService;
 
-    // ✅ Xóa sản phẩm theo ID
-    void deleteSanPhamById(Long id);
+    @Override
+    public List<sanpham> getallSanpham() {
+        return sanPhamRepository.findAll();
+    }
 
-    // ✅ Tìm kiếm + Lọc + Phân trang
-    Page<sanpham> searchAndFilterSanPham(String searchTerm, Double minGia, Double maxGia, List<String> thuongHieu, int page, int size);
+    @Override
+    public List<sanpham> getAllSanPham() {
+        return List.of();
+    }
 
-    // ✅ Lấy tất cả sản phẩm có phân trang
-    Page<sanpham> getAllSanPham(int page, int size);
+    @Override
+    public Optional<sanpham> getSanPhamById(Long id) {
+        return sanPhamRepository.findById(id);
+    }
 
-    // ✅ Lấy sản phẩm theo danh mục (không phân trang)
-    List<sanpham> getSanPhamByPhanLoaiHang_Id(Long phanLoaiId);
+    @Override
+    public sanpham createSanPham(sanpham sanPham, List<MultipartFile> files) {
+        sanpham savedSanPham = sanPhamRepository.save(sanPham);
 
-    // ✅ Lấy sản phẩm theo danh mục (có phân trang)
-    Page<sanpham> getSanPhamByPhanLoaiHang_Id(Long phanLoaiId, Pageable pageable);
+        if (files != null && !files.isEmpty()) {
+            for (MultipartFile file : files) {
+                if (!file.isEmpty()) {
+                    try {
+                        String imageUrl = fileUploadService.uploadFile(file, "products");
+                        HinhAnhSanPham hinhAnhSanPham = new HinhAnhSanPham();
+                        hinhAnhSanPham.setSanPham(savedSanPham);
+                        hinhAnhSanPham.setUrlHinhAnh(imageUrl);
+                        hinhAnhSanPhamService.saveHinhAnh(hinhAnhSanPham);
+                    } catch (IOException e) {
+                        throw new RuntimeException("❌ Lỗi khi upload ảnh: " + e.getMessage());
+                    }
+                }
+            }
+        }
+        return savedSanPham;
+    }
+
+    @Override
+    public sanpham updateSanPham(Long id, sanpham sanPham, List<MultipartFile> files) {
+        Optional<sanpham> existingSanPham = sanPhamRepository.findById(id);
+        if (existingSanPham.isPresent()) {
+            sanpham updateSanPham = existingSanPham.get();
+            updateSanPham.setTensanpham(sanPham.getTensanpham());
+            updateSanPham.setMota(sanPham.getMota());
+            updateSanPham.setGia(sanPham.getGia());
+            updateSanPham.setSoLuong(sanPham.getSoLuong());
+            updateSanPham.setThuongHieu(sanPham.getThuongHieu());
+            updateSanPham.setModel(sanPham.getModel());
+            updateSanPham.setCauHinh(sanPham.getCauHinh());
+            updateSanPham.setGiamGia(sanPham.getGiamGia());
+
+            if (files != null && !files.isEmpty()) {
+                List<HinhAnhSanPham> oldImages = hinhAnhSanPhamService.getHinhAnhBySanPhamId(id);
+                for (HinhAnhSanPham oldImage : oldImages) {
+                    fileUploadService.deleteFile(oldImage.getUrlHinhAnh());
+                    hinhAnhSanPhamService.deleteHinhAnh(oldImage.getId());
+                }
+
+                for (MultipartFile file : files) {
+                    if (!file.isEmpty()) {
+                        try {
+                            String imageUrl = fileUploadService.uploadFile(file, "products");
+                            HinhAnhSanPham hinhAnhSanPham = new HinhAnhSanPham();
+                            hinhAnhSanPham.setSanPham(updateSanPham);
+                            hinhAnhSanPham.setUrlHinhAnh(imageUrl);
+                            hinhAnhSanPhamService.saveHinhAnh(hinhAnhSanPham);
+                        } catch (IOException e) {
+                            throw new RuntimeException("❌ Lỗi khi upload ảnh: " + e.getMessage());
+                        }
+                    }
+                }
+            }
+            return sanPhamRepository.save(updateSanPham);
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteSanPhamById(Long id) {
+        Optional<sanpham> optionalSanPham = sanPhamRepository.findById(id);
+        if (optionalSanPham.isPresent()) {
+            sanpham sanPham = optionalSanPham.get();
+            List<HinhAnhSanPham> hinhAnhs = hinhAnhSanPhamService.getHinhAnhBySanPhamId(id);
+            for (HinhAnhSanPham hinhAnh : hinhAnhs) {
+                fileUploadService.deleteFile(hinhAnh.getUrlHinhAnh());
+                hinhAnhSanPhamService.deleteHinhAnh(hinhAnh.getId());
+            }
+            sanPhamRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("❌ Không tìm thấy sản phẩm để xóa!");
+        }
+    }
+
+    @Override
+    public Page<sanpham> searchAndFilterSanPham(String searchTerm, Double minGia, Double maxGia, List<String> thuongHieu, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("ngayTao").descending());
+        Specification<sanpham> spec = Specification.where(null);
+
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.or(
+                            criteriaBuilder.like(root.get("tensanpham"), "%" + searchTerm + "%"),
+                            criteriaBuilder.like(root.get("mota"), "%" + searchTerm + "%")
+                    )
+            );
+        }
+
+        if (minGia != null) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("gia"), minGia)
+            );
+        }
+        if (maxGia != null) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.lessThanOrEqualTo(root.get("gia"), maxGia)
+            );
+        }
+
+        if (thuongHieu != null && !thuongHieu.isEmpty()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    root.get("thuongHieu").in(thuongHieu)
+            );
+        }
+
+        return sanPhamRepository.findAll(spec, pageable);
+    }
+
+    public Page<sanpham> getAllSanPham(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return sanPhamRepository.findAll(pageable);
+    }
+
+    @Override
+    public List<sanpham> getSanPhamByPhanLoaiHang_Id(Long phanLoaiId) {
+        return sanPhamRepository.findByPhanLoaiHang_Id(phanLoaiId);
+    }
+
+    @Override
+    public Page<sanpham> getSanPhamByPhanLoaiHang_Id(Long phanLoaiId, Pageable pageable) {
+        return  sanPhamRepository.findByPhanLoaiHang_Id(phanLoaiId, pageable);
+    }
+
+
+
 }

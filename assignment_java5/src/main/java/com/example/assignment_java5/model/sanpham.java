@@ -48,4 +48,13 @@ public class sanpham {
     // 🆕 Thêm quan hệ OneToMany để lưu nhiều ảnh sản phẩm
     @OneToMany(mappedBy = "sanPham", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<HinhAnhSanPham> danhSachHinhAnh;
+
+    @Transient  // Không lưu vào DB, chỉ dùng cho view
+    public String getAnhDauTien() {
+        if (danhSachHinhAnh != null && !danhSachHinhAnh.isEmpty()) {
+            return danhSachHinhAnh.get(0).getUrlHinhAnh();  // Lấy ảnh đầu tiên
+        }
+        return "/img/no-image.jpg"; // Nếu không có ảnh, dùng ảnh mặc định
+    }
+
 }

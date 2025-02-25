@@ -9,6 +9,8 @@ import com.example.assignment_java5.service.PhanLoaiHangService;
 import com.example.assignment_java5.service.sanphamservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -29,23 +31,45 @@ public class sanphamcontroller {
 
     @Autowired
     private HinhAnhSanPhamService hinhAnhSanPhamService;
-    //lấy tất cả sản phẩm
+
     @GetMapping("/list")
-    public String getAllSanPham(Model model) {
-        List<sanpham> sanPhamList = Sanphamservice.getallSanpham();
+    public String getSanPhamList(@RequestParam(value = "category", required = false) Long categoryId,
+                                 @RequestParam(value = "searchTerm", required = false) String searchTerm,
+                                 @RequestParam(value = "minGia", required = false) Double minGia,
+                                 @RequestParam(value = "maxGia", required = false) Double maxGia,
+                                 @RequestParam(value = "thuongHieu", required = false) List<String> thuongHieu,
+                                 @RequestParam(value = "page", defaultValue = "0") int page,
+                                 @RequestParam(value = "size", defaultValue = "12") int size,
+                                 Model model) {
+
+        Page<sanpham> sanPhamPage;
+
+        // Kiểm tra nếu có categoryId, lọc sản phẩm theo danh mục
+        if (categoryId != null) {
+            sanPhamPage = Sanphamservice.getSanPhamByPhanLoaiHang_Id(categoryId, PageRequest.of(page, size));
+        } else {
+            // Nếu không có categoryId, thực hiện tìm kiếm và lọc sản phẩm
+            sanPhamPage = Sanphamservice.searchAndFilterSanPham(searchTerm, minGia, maxGia, thuongHieu, page, size);
+        }
+
+        // Lấy tất cả danh mục phân loại từ service
         List<phanloaihang> danhMucList = phanLoaiHangService.getAllDanhMuc();
 
-        // ✅ Debug: In danh mục ra console
-        System.out.println("📌 Danh sách danh mục: " + danhMucList);
+        // Truyền các thuộc tính vào model
+        model.addAttribute("sanPhamPage", sanPhamPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", sanPhamPage.getTotalPages());
+        model.addAttribute("searchTerm", searchTerm);
+        model.addAttribute("minGia", minGia);
+        model.addAttribute("maxGia", maxGia);
+        model.addAttribute("thuongHieu", thuongHieu);
+        model.addAttribute("categoryId", categoryId);
 
-        model.addAttribute("sanPhams", sanPhamList);
+        // Truyền danh sách danh mục vào model
         model.addAttribute("danhMucList", danhMucList);
-        model.addAttribute("sanPham", new sanpham());
-        return "/Java5/products";
+
+        return "products";  // Trang sản phẩm hiển thị danh sách
     }
-
-
-
     @GetMapping("/uploadsanpham")
     public String uploadsanpham(Model model) {
         List<sanpham> sanphamList = Sanphamservice.getallSanpham();
@@ -57,7 +81,7 @@ public class sanphamcontroller {
         model.addAttribute("sanPhams", sanphamList);
         model.addAttribute("danhMucList", danhMucList); // ✅ Truyền danh mục vào Thymeleaf
 
-        return "/Java5/uploadoder";
+        return "uploadoder";
     }
 
     @GetMapping("/detail/{id}")
@@ -79,17 +103,18 @@ public class sanphamcontroller {
         model.addAttribute("sanPham", sanPham);
         model.addAttribute("danhSachAnh", danhSachAnh);
 
-        return "/Java5/product-detail";
+        return "product-detail";
     }
 
 
     //Lấy tất cả sản phẩm theo id
     @GetMapping("/{id}")
-    public  String getsanphamid(@PathVariable int id , Model model){
+    public String getsanphamid(@PathVariable int id, Model model) {
         sanpham Sanpham = Sanphamservice.getSanPhamById(Long.valueOf(id)).orElse(null);
-        model.addAttribute("sanPham",Sanpham);
-        return "/Java5/product-detail";
+        model.addAttribute("sanPham", Sanpham);
+        return "product-detail";
     }
+
     @PostMapping("/create")
     public String createSanpham(@ModelAttribute sanpham sanPham,
                                 @RequestParam("phanLoaiId") Long phanLoaiId,
@@ -101,6 +126,7 @@ public class sanphamcontroller {
         Sanphamservice.createSanPham(sanPham, files);
         return "redirect:/sanpham/";
     }
+
     // Xóa sản phẩm
     @GetMapping("/delete/{id}")
     public String deleteSanPham(@PathVariable Long id) {
@@ -108,10 +134,6 @@ public class sanphamcontroller {
         return "redirect:/api/sanpham/uploadsanpham";  // Redirect về trang danh sách sản phẩm
     }
 
-   @GetMapping("/search")
-    public String searchSanPham(@RequestParam("searchTerm") String searchTerm, Model model) {
-        List<sanpham> foundProducts = Sanphamservice.searchSanPham(searchTerm);
-        model.addAttribute("sanPhams", foundProducts);
-        return "sanpham"; // Trả về trang danh sách sản phẩm với kết quả tìm kiếm
-    }
+
+
 }
