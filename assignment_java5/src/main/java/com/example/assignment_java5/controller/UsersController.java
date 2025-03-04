@@ -100,7 +100,8 @@ public class UsersController {
     // ✅ Xử lý đăng nhập
     @PostMapping("/login")
     public String loginUser(@RequestParam String email, @RequestParam String password, Model model, HttpSession session) {
-        Optional<nhanviendto> userDTO = userservice.login(email, password); // Trả về DTO
+        // Lấy DTO người dùng sau khi đăng nhập
+        Optional<nhanviendto> userDTO = userservice.login(email, password);
 
         if (userDTO.isPresent()) {
             nhanviendto userDto = userDTO.get();
@@ -109,15 +110,28 @@ public class UsersController {
             Optional<nhanvien> userEntity = nhanviendrepository.findById(userDto.getId());
 
             if (userEntity.isPresent()) {
-                session.setAttribute("username", userEntity.get().getTenNhanVien());
-                session.setAttribute("currentUser", userEntity.get()); // Lưu entity vào session
-                return "index";
+                nhanvien currentUser = userEntity.get();
+
+                // Lưu thông tin vào session
+                session.setAttribute("username", currentUser.getTenNhanVien());
+                session.setAttribute("currentUser", currentUser);  // Lưu cả đối tượng người dùng vào session
+
+                // Lưu currentUserId vào session (id của user)
+                session.setAttribute("currentUserId", currentUser.getChucVu().getId());
+
+                // Lưu role vào session (lấy role như "admin", "customer"...)
+                String userRole = currentUser.getChucVu().getTenChucVu(); // Giả sử bạn có một thuộc tính 'role' trong 'ChucVu'
+                session.setAttribute("currentUserRole", userRole); // Lưu role vào session
+
+                return "redirect:/api/index/";  // Redirect đến trang chủ sau khi đăng nhập
             }
         }
 
+        // Nếu thông tin đăng nhập không chính xác, trả về trang login với thông báo lỗi
         model.addAttribute("error", "Thông tin đăng nhập không chính xác");
-        return "/Java5/login";
+        return "/Java5/login"; // Trả về trang login
     }
+
 
 
 

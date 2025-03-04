@@ -82,20 +82,13 @@
                                 Đăng ký
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li th:if="${session.username != null}">
-                            <a class="dropdown-item" href="/orders">
-                                <i class="bi bi-bag"></i>
-                                Đơn hàng của tôi
-                            </a>
-                        </li>
                         <li th:if="${session.username != null}">
                             <a class="dropdown-item" href="/user/profile">
                                 <i class="bi bi-person-fill"></i>
                                 Thay Đổi Thông tin
                             </a>
                         </li>
-                        <li th:if="${session.username != null}">
+                        <li th:if="${session.currentUserId != 10002}">
                             <a class="dropdown-item" href="/orders">
                                 <i class="bi bi-graph-down"></i>
                                 Thống kê
@@ -107,13 +100,7 @@
                                 Sản phẩm yêu thích
                             </a>
                         </li>
-                        <li th:if="${session.username != null}">
-                            <a class="dropdown-item" href="/profile">
-                                <i class="bi bi-person-gear"></i>
-                                Cài đặt tài khoản
-                            </a>
-                        </li>
-                        <li th:if="${session.username != null}">
+                        <li th:if="${session.currentUserId != 10002}">
                             <a class="dropdown-item" th:href="@{/api/sanpham/uploadsanpham}">
                                 <i class="bi bi-upload"></i>
                                 Upload Sản Phẩm

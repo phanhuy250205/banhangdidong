@@ -261,10 +261,18 @@
                                     <span class="current-price" th:text="${Sanpham.gia}"></span>
                                     <span class="old-price" th:text="${Sanpham.giamGia}"></span>
                                 </div>
-                                <form id="addToCartForm">
+
+                                <!-- Hiển thị nút "Thêm vào giỏ" nếu currentUserId là 10002 -->
+                                <form th:if="${showAddToCart}" id="addToCartForm">
                                     <input type="hidden" name="sanPhamId" th:value="${Sanpham.id}">
                                     <button type="button" class="btn-add-cart" onclick="addToCart(this)">🛒 Thêm vào giỏ</button>
                                 </form>
+
+                                <!-- Hiển thị nút "Xem thống kê" nếu không phải là người dùng với ID 10002 -->
+                                <a th:if="${not showAddToCart}" href="/statistics" class="btn btn-outline-primary d-flex align-items-center gap-2">
+                                    <i class="bi bi-bar-chart-fill"></i> Xem thống kê
+                                </a>
+
                             </div>
                         </div>
                     </div>

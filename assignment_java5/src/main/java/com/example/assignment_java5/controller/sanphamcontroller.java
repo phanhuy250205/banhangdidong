@@ -2,11 +2,13 @@ package com.example.assignment_java5.controller;
 
 import com.example.assignment_java5.Dto.sanphamdto;
 import com.example.assignment_java5.model.HinhAnhSanPham;
+import com.example.assignment_java5.model.nhanvien;
 import com.example.assignment_java5.model.phanloaihang;
 import com.example.assignment_java5.model.sanpham;
 import com.example.assignment_java5.service.HinhAnhSanPhamService;
 import com.example.assignment_java5.service.PhanLoaiHangService;
 import com.example.assignment_java5.service.sanphamservice;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.data.domain.Page;
@@ -40,9 +42,16 @@ public class sanphamcontroller {
                                  @RequestParam(value = "thuongHieu", required = false) List<String> thuongHieu,
                                  @RequestParam(value = "page", defaultValue = "0") int page,
                                  @RequestParam(value = "size", defaultValue = "12") int size,
-                                 Model model) {
+                                 Model model, HttpSession session) {
 
         Page<sanpham> sanPhamPage;
+
+        // Lấy thông tin người dùng hiện tại từ session
+        nhanvien currentUser = (nhanvien) session.getAttribute("currentUser");
+        Long currentUserId = (currentUser != null && currentUser.getChucVu() != null) ? currentUser.getChucVu().getId() : null;
+
+        // In ra currentUserId để kiểm tra
+        System.out.println("Current User ID: " + currentUserId);
 
         // Kiểm tra nếu có categoryId, lọc sản phẩm theo danh mục
         if (categoryId != null) {
@@ -64,12 +73,23 @@ public class sanphamcontroller {
         model.addAttribute("maxGia", maxGia);
         model.addAttribute("thuongHieu", thuongHieu);
         model.addAttribute("categoryId", categoryId);
-
-        // Truyền danh sách danh mục vào model
         model.addAttribute("danhMucList", danhMucList);
+
+        // Kiểm tra user role và điều chỉnh nút hiển thị tùy theo userId
+        if (currentUserId != null) {
+            // Kiểm tra xem userId có phải là 10002 (Role người dùng là khách hàng)
+            if (currentUserId == 10002) {
+                model.addAttribute("showAddToCart", true); // Hiển thị nút "Thêm vào giỏ"
+            } else {
+                model.addAttribute("showAddToCart", false); // Ẩn nút "Thêm vào giỏ", chỉ hiển thị nút "Xem thống kê"
+            }
+        } else {
+            model.addAttribute("showAddToCart", false); // Không có session user, ẩn nút
+        }
 
         return "products";  // Trang sản phẩm hiển thị danh sách
     }
+
     @GetMapping("/uploadsanpham")
     public String uploadsanpham(Model model) {
         List<sanpham> sanphamList = Sanphamservice.getallSanpham();
@@ -124,15 +144,39 @@ public class sanphamcontroller {
                 .orElseThrow(() -> new RuntimeException("❌ Không tìm thấy danh mục với ID: " + phanLoaiId)));
 
         Sanphamservice.createSanPham(sanPham, files);
-        return "redirect:/sanpham/";
+        return "redirect:/api/sanpham/uploadsanpham";
     }
 
     // Xóa sản phẩm
+    @GetMapping("/edit/{id}")
+    public String editSanPham(@PathVariable Long id, Model model) {
+        Optional<sanpham> sanPhamOpt = Sanphamservice.getSanPhamById(id);
+
+        if (sanPhamOpt.isPresent()) {
+            sanpham sanPham = sanPhamOpt.get();
+            model.addAttribute("sanPham", sanPham);  // Truyền sanPham vào model
+            List<phanloaihang> danhMucList = phanLoaiHangService.getAllDanhMuc();
+            model.addAttribute("danhMucList", danhMucList);
+            return "uploadoder"; // Trả về trang với modal sửa sản phẩm
+        } else {
+            return "redirect:/api/sanpham/uploadsanpham"; // Điều hướng về trang danh sách nếu không tìm thấy sản phẩm
+        }
+    }
+
     @GetMapping("/delete/{id}")
     public String deleteSanPham(@PathVariable Long id) {
-        Sanphamservice.deleteSanPhamById(id);
-        return "redirect:/api/sanpham/uploadsanpham";  // Redirect về trang danh sách sản phẩm
+        Sanphamservice.deleteSanPhamById(id); // Gọi phương thức xóa từ service
+        return "redirect:/api/sanpham/uploadsanpham";  // Điều hướng lại trang danh sách sau khi xóa
     }
+
+    @PostMapping("/update")
+    public String updateSanPham(@ModelAttribute sanpham sanPham,
+                                @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+        Sanphamservice.updateSanPham(sanPham.getId(), sanPham, files); // Cập nhật sản phẩm
+        return "redirect:/api/sanpham/uploadsanpham";  // Điều hướng lại trang danh sách sau khi sửa
+    }
+
+
 
 
 

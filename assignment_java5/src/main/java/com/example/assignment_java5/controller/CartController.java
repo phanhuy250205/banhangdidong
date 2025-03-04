@@ -182,7 +182,6 @@ public class CartController {
 
         System.out.println("🟢 Tạm tính: " + totalAmount + "₫");
         System.out.println("🟢 Tổng cộng sau giảm giá: " + finalTotal + "₫");
-
         return "cart"; // Chuyển đến trang giỏ hàng
     }
 
@@ -296,11 +295,6 @@ public class CartController {
 
         return "redirect:/cart/view";
     }
-
-
-
-
-
 
     @GetMapping("/count")
     @ResponseBody
