@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,23 +19,29 @@
                             <h2 class="fw-bold">Đăng nhập vào TechZone</h2>
                             <p class="text-muted">Chào mừng bạn trở lại!</p>
                         </div>
-                        <form  th:action="@{/user/login}" method="post">
+                        <form  th:action="@{/user/login}" method="post" th:object="${loginDTO}">
                             <div class="mb-4">
                                 <div class="input-group">
                                     <span class="input-group-text bg-light">
                                         <i class="fas fa-envelope"></i>
                                     </span>
-                                    <input type="email" name="email" class="form-control" placeholder="Email của bạn" required>
+                                    <input type="email" th:field="*{email}" class="form-control" placeholder="Email của bạn" required>
                                 </div>
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                             </div>
                             <div class="mb-4">
                                 <div class="input-group">
                                     <span class="input-group-text bg-light">
                                         <i class="fas fa-lock"></i>
                                     </span>
-                                    <input type="password" name="password" class="form-control" placeholder="Mật khẩu" required>
+                                    <input type="password" th:field="*{passwold}" class="form-control" placeholder="Mật khẩu" required>
                                 </div>
+                                <div class="text-danger mt-1" th:if="${#fields.hasErrors('passwold')}" th:errors="*{passwold}"></div>
                             </div>
+                            <div class="text-danger text-center mb-3" th:if="${error}">
+                                <p th:text="${error}"></p>
+                            </div>
+
                             <div class="d-flex justify-content-between mb-4">
                                 <div class="form-check">
                                     <input type="checkbox" class="form-check-input" id="remember" name="remember">
